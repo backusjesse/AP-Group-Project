@@ -582,3 +582,25 @@ print(f"{'GRS p-value':<25}{pvalue_capm:>15.3e}{pvalue_3f:>15.3e}")
 print(f"{'Total R-squared':<25}{R2_total_capm:>15.4f}{R2_total_3f:>15.4f}")
 print(f"{'Predictive R-squared':<25}{R2_pred_capm:>15.4f}{R2_pred_3f:>15.4f}")
 print(f"{'Sharpe ratio':<25}{sharpe_market:>15.4f}{sharpe_3f:>15.4f}")
+
+# GRS-implied maximum Sharpe ratio:
+# factors + 25 test portfolios
+sharpe_combined_capm = np.sqrt(
+    sharpe_market**2 + alpha_term_capm
+)
+
+print("\nCAPM factor Sharpe ratio:")
+print(sharpe_market)
+print("CAPM + 25 test assets maximum Sharpe ratio:")
+print(sharpe_combined_capm)
+
+# Maximum Sharpe ratio after adding the 25 test assets
+sharpe_combined_3f = np.sqrt(
+    sharpe_3f**2 + alpha_term_3f
+)
+
+print("\nThree-factor factor Sharpe ratio:")
+print(sharpe_3f)
+
+print("Three-factor + 25 test assets maximum Sharpe ratio:")
+print(sharpe_combined_3f)
