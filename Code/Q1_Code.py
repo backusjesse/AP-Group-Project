@@ -52,12 +52,18 @@ def tangency_portfolio(mu_excess, Sigma):
     return w, exp_excess_return, std, sharpe
 
 
-# Tangency portfolios (built from excess returns) 
 w_tan_port, exret_tan_port, std_tan_port, sharpe_tan_port = tangency_portfolio(mu_e_port, Sigma_port)
 w_tan_fac, exret_tan_fac, std_tan_fac, sharpe_tan_fac = tangency_portfolio(mu_e_fac, Sigma_fac)
 
 mean_tan_port = rf_fixed + exret_tan_port
 mean_tan_fac = rf_fixed + exret_tan_fac
+
+# Global minimum-variance portfolio, 25 portfolios
+Sigma_inv_port = np.linalg.inv(Sigma_port)
+w_gmv = Sigma_inv_port @ ones_port
+w_gmv = w_gmv / (ones_port @ Sigma_inv_port @ ones_port)
+mean_gmv = rf_fixed + w_gmv @ mu_e_port
+std_gmv = np.sqrt(w_gmv @ Sigma_port @ w_gmv)
 
 # No-riskless frontier, 25 portfolios — now mean_tan_port exists
 targets_port, stds_port = efficient_frontier(mu_port, Sigma_port, ones_port, target_max=mean_tan_port * 1.6)
@@ -75,6 +81,7 @@ plt.plot(cal_std_range, cal_fac, label='CAL: riskless + Mkt, SMB, Mom (tangency)
 
 plt.scatter([std_tan_port], [mean_tan_port], color='steelblue', zorder=5, s=60, marker='*')
 plt.scatter([std_tan_fac], [mean_tan_fac], color='darkorange', zorder=5, s=60, marker='*')
+plt.scatter([std_gmv], [mean_gmv], color='green', zorder=5, s=60, marker='o', label='GMV (25 portfolios)')
 
 plt.xlabel('Volatility (std dev, % per month)')
 plt.ylabel('Mean return (% per month)')
@@ -91,3 +98,11 @@ print(f"{'':30s}{'25 Portfolios':>18s}{'3 Factors':>18s}")
 print(f"{'Expected return (%)':30s}{mean_tan_port:18.2f}{mean_tan_fac:18.2f}")
 print(f"{'Volatility (%)':30s}{std_tan_port:18.2f}{std_tan_fac:18.2f}")
 print(f"{'Sharpe ratio':30s}{sharpe_tan_port:18.3f}{sharpe_tan_fac:18.3f}")
+
+print("\n--- GMV Portfolio (25 portfolios) ---")
+print(f"Mean return (%): {mean_gmv:.2f}")
+print(f"Volatility (%): {std_gmv:.2f}")
+
+print("\n--- Tangency Weight Ranges ---")
+print(f"25-portfolio tangency weights: min {w_tan_port.min():.2f}, max {w_tan_port.max():.2f}")
+print(f"3-factor tangency weights: min {w_tan_fac.min():.2f}, max {w_tan_fac.max():.2f}")
