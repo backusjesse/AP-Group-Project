@@ -569,3 +569,16 @@ print(R2_pred_3f)
 print("Three-factor Predictive R-squared (%):")
 
 print(R2_pred_3f * 100)
+
+print("\n" + "=" * 60)
+print("QUESTION 2: MODEL COMPARISON")
+print("=" * 60)
+
+print(f"{'Measure':<25}{'CAPM':>15}{'3-Factor':>15}")
+print("-" * 55)
+
+print(f"{'GRS statistic':<25}{grs_capm:>15.3f}{grs_3f:>15.3f}")
+print(f"{'GRS p-value':<25}{pvalue_capm:>15.3e}{pvalue_3f:>15.3e}")
+print(f"{'Total R-squared':<25}{R2_total_capm:>15.4f}{R2_total_3f:>15.4f}")
+print(f"{'Predictive R-squared':<25}{R2_pred_capm:>15.4f}{R2_pred_3f:>15.4f}")
+print(f"{'Sharpe ratio':<25}{sharpe_market:>15.4f}{sharpe_3f:>15.4f}")
