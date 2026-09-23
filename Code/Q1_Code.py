@@ -26,7 +26,7 @@ ones_port = np.ones(n_port)
 ones_fac = np.ones(n_fac)
 
 
-def efficient_frontier(mu, Sigma, ones, n_points=100):
+def efficient_frontier(mu, Sigma, ones, target_max, n_points=100):
     """No-riskless-asset frontier: returns (target_returns, min_std_devs)."""
     Sigma_inv = np.linalg.inv(Sigma)
     A = ones @ Sigma_inv @ ones
@@ -34,7 +34,7 @@ def efficient_frontier(mu, Sigma, ones, n_points=100):
     C = mu @ Sigma_inv @ mu
     D = A * C - B ** 2
 
-    targets = np.linspace(mu.min(), mu.max() * 1.5, n_points)
+    targets = np.linspace(mu.min(), target_max, n_points)
     variances = (A * targets ** 2 - 2 * B * targets + C) / D
     stds = np.sqrt(np.maximum(variances, 0))
     return targets, stds
@@ -52,15 +52,15 @@ def tangency_portfolio(mu_excess, Sigma):
     return w, exp_excess_return, std, sharpe
 
 
-# No-riskless frontier, 25 portfolios
-targets_port, stds_port = efficient_frontier(mu_port, Sigma_port, ones_port)
-
-# Tangency portfolios (built from excess returns)
+# Tangency portfolios (built from excess returns) 
 w_tan_port, exret_tan_port, std_tan_port, sharpe_tan_port = tangency_portfolio(mu_e_port, Sigma_port)
 w_tan_fac, exret_tan_fac, std_tan_fac, sharpe_tan_fac = tangency_portfolio(mu_e_fac, Sigma_fac)
 
 mean_tan_port = rf_fixed + exret_tan_port
 mean_tan_fac = rf_fixed + exret_tan_fac
+
+# No-riskless frontier, 25 portfolios — now mean_tan_port exists
+targets_port, stds_port = efficient_frontier(mu_port, Sigma_port, ones_port, target_max=mean_tan_port * 1.6)
 
 # Capital allocation lines (with riskless asset)
 cal_std_range = np.linspace(0, max(std_tan_port, std_tan_fac) * 1.3, 50)
@@ -78,7 +78,7 @@ plt.scatter([std_tan_fac], [mean_tan_fac], color='darkorange', zorder=5, s=60, m
 
 plt.xlabel('Volatility (std dev, % per month)')
 plt.ylabel('Mean return (% per month)')
-plt.title('Efficient Frontiers: 25 Size-Momentum Portfolios vs. Mkt/SMB/Mom Factors')
+plt.title('Efficient Frontiers: 25 Size-Momentum Portfolios vs. 3 Factor Model')
 plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
