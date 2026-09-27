@@ -23,7 +23,7 @@ def load_monthly_block(filepath):
     df.columns = [c.strip() for c in df.columns]
     df['date'] = df['date'].astype(str).str.strip()
 
-    # Keep only monthly rows (YYYYMM, 6 digits) — drops any stray annual rows
+    # Keep only monthly rows (YYYYMM, 6 digits) dropping any stray annual rows
     df = df[df['date'].str.match(r'^\d{6}$')]
     df['date'] = df['date'].astype(int)
     return df.set_index('date')
@@ -37,7 +37,7 @@ ff3 = load_monthly_block('Data/factor_ff3.csv')[['Mkt-RF', 'SMB', 'RF']]
 # Merge on date
 data = portfolios.join(ff3, how='inner').join(momentum, how='inner')
 
-# Trim to your sample period
+# Trim to the sample period
 data = data.loc[197208:202409]
 
 print("Shape:", data.shape)

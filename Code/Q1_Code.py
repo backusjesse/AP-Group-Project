@@ -66,7 +66,7 @@ mean_gmv = rf_fixed + w_gmv @ mu_e_port
 std_gmv = np.sqrt(w_gmv @ Sigma_port @ w_gmv)
 sharpe_gmv = (w_gmv @ mu_e_port) / std_gmv
 
-# No-riskless frontier, 25 portfolios — now mean_tan_port exists
+# No-riskless frontier, 25 portfolios (now mean_tan_port exists)
 targets_port, stds_port = efficient_frontier(mu_port, Sigma_port, ones_port, target_max=mean_tan_port * 1.6)
 
 # Capital allocation lines (with riskless asset)
