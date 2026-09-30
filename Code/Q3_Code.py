@@ -60,7 +60,7 @@ PORT_FILE = 'Data/portfolios_25_size_mom.csv'
 returns = load_block(PORT_FILE)
 market_cap = load_block(PORT_FILE, 'Average Market Cap')
 prior_vw = load_block(PORT_FILE, 'Value-Weighted Average of Prior Returns')
-ff3 = load_block('Data/factor_ff3.csv')[['Mkt-RF', 'RF']]
+ff3 = load_block('Data/factor_ff5.csv')[['Mkt-RF', 'RF']]
 
 names = returns.columns.tolist()
 ff3 = ff3.reindex(returns.index)

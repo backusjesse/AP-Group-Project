@@ -32,7 +32,7 @@ def load_monthly_block(filepath):
 # Load each file
 portfolios = load_monthly_block('Data/portfolios_25_size_mom.csv')
 momentum = load_monthly_block('Data/factor_momentum.csv')[['Mom']]
-ff3 = load_monthly_block('Data/factor_ff3.csv')[['Mkt-RF', 'SMB', 'RF']]
+ff3 = load_monthly_block('Data/factor_ff5.csv')[['Mkt-RF', 'SMB', 'RF']]
 
 # Merge on date
 data = portfolios.join(ff3, how='inner').join(momentum, how='inner')
