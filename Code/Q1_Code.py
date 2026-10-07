@@ -69,42 +69,38 @@ sharpe_gmv = (w_gmv @ mu_e_port) / std_gmv
 # No-riskless frontier, 25 portfolios (now mean_tan_port exists)
 targets_port, stds_port = efficient_frontier(mu_port, Sigma_port, ones_port, target_max=mean_tan_port * 1.6)
 
-# Capital allocation lines (with riskless asset)
-cal_std_range = np.linspace(0, max(std_tan_port, std_tan_fac) * 1.3, 50)
+# Capital allocation lines (with riskless asset), drawn over the same range as the frontier
+cal_std_range = np.linspace(0, stds_port.max(), 50)
 cal_port = rf_fixed + sharpe_tan_port * cal_std_range
 cal_fac = rf_fixed + sharpe_tan_fac * cal_std_range
 
+# Split the frontier at the GMV: efficient part (above) and inefficient part (below)
+efficient = targets_port >= mean_gmv
+
 # Plot
 plt.figure(figsize=(9, 6))
-plt.plot(stds_port, targets_port, label='Efficient frontier (25 portfolios, no riskless)', color='steelblue')
-plt.plot(cal_std_range, cal_port, label='CAL: riskless + 25 portfolios (tangency)', color='steelblue', linestyle='--')
-plt.plot(cal_std_range, cal_fac, label='CAL: riskless + Mkt, SMB, Mom (tangency)', color='darkorange', linestyle='--')
+plt.plot(stds_port[efficient], targets_port[efficient], color='steelblue',
+         label='Efficient frontier (25 portfolios, no riskless)')
+plt.plot(stds_port[~efficient], targets_port[~efficient], color='steelblue', linestyle=':',
+         label='Inefficient part of the frontier')
+plt.plot(cal_std_range, cal_port, color='steelblue', linestyle='--',
+         label='CAL: riskless + 25 portfolios')
+plt.plot(cal_std_range, cal_fac, color='darkorange', linestyle='--',
+         label='CAL: riskless + Mkt-RF, SMB, Mom')
 
-plt.scatter([std_tan_port], [mean_tan_port], color='steelblue', zorder=5, s=60, marker='*')
-plt.scatter([std_tan_fac], [mean_tan_fac], color='darkorange', zorder=5, s=60, marker='*')
-plt.scatter([std_gmv], [mean_gmv], color='green', zorder=5, s=60, marker='o', label='GMV (25 portfolios)')
+plt.scatter([std_tan_port], [mean_tan_port], color='steelblue', zorder=5, s=80, marker='*',
+            label='Tangency (25 portfolios)')
+plt.scatter([std_tan_fac], [mean_tan_fac], color='darkorange', zorder=5, s=80, marker='*',
+            label='Tangency (3 factors)')
+plt.scatter([std_gmv], [mean_gmv], color='green', zorder=5, s=60, marker='o',
+            label='GMV (25 portfolios)')
 
+plt.xlim(left=0)
 plt.xlabel('Volatility (std dev, % per month)')
 plt.ylabel('Mean return (% per month)')
 plt.title('Efficient Frontiers: 25 Size-Momentum Portfolios vs. 3 Factor Model')
-plt.legend()
+plt.legend(loc='upper left')
 plt.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig('Code/q1_frontier.png', dpi=150)
 plt.show()
-
-# Tangency portfolio comparison table
-print("\n Tangency Portfolio Comparison")
-print(f"{'':30s}{'25 Portfolios':>18s}{'3 Factors':>18s}")
-print(f"{'Expected return (%)':30s}{mean_tan_port:18.2f}{mean_tan_fac:18.2f}")
-print(f"{'Volatility (%)':30s}{std_tan_port:18.2f}{std_tan_fac:18.2f}")
-print(f"{'Sharpe ratio':30s}{sharpe_tan_port:18.3f}{sharpe_tan_fac:18.3f}")
-
-print("\n GMV Portfolio (25 portfolios):")
-print(f"Mean return (%): {mean_gmv:.2f}")
-print(f"Volatility (%): {std_gmv:.2f}")
-print(f"Sharpe ratio: {sharpe_gmv:.3f}")
-
-print("\n Tangency Weight Ranges:")
-print(f"25-portfolio tangency weights: min {w_tan_port.min():.2f}, max {w_tan_port.max():.2f}")
-print(f"3-factor tangency weights: min {w_tan_fac.min():.2f}, max {w_tan_fac.max():.2f}")
